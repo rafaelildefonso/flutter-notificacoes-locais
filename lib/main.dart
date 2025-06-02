@@ -6,7 +6,9 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:notificacoes_locais/app_lifecycle_observer.dart';
 import 'package:notificacoes_locais/home_page.dart';
+import 'package:notificacoes_locais/noti_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -66,6 +68,9 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Inicialize apenas uma vez
+
+  final observer = AppLifecycleObserver();
+  WidgetsBinding.instance.addObserver(observer);
 
   await _configureLocalTimeZone();
 
@@ -179,6 +184,12 @@ class _MainAppState extends State<MainApp> {
     _pendingNotifications();
     _requestExactAlarmPermission(); // Solicitar permissão para alarmes exatos
     
+  }
+
+  @override
+  void dispose() {
+    NotificationService().showNotification("irado", "conteudo irado");
+    super.dispose();
   }
 
   Future<void> _checarPermissao() async {
